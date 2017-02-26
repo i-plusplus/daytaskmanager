@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,13 +29,33 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
         update();
     }
-    public void delete(View v){
+
+    void updateDate(Task t){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(t.year,t.month-1,t.day,t.hour,t.min);
+        calendar.add(Calendar.DATE,1);
+        t.year = calendar.get(Calendar.YEAR);
+        t.month = calendar.get(Calendar.MONTH) +1;
+        t.day = calendar.get(Calendar.DATE);
+        t.hour = calendar.get(Calendar.HOUR);
+        t.min = calendar.get(Calendar.MINUTE);
+    }
+
+
+    public void delete(View v, boolean isDeleteP){
         View v2 = (View)v.getParent();
         Task t = (Task)v2.getTag(R.id.taskid);
         SharedPreferences settings = getSharedPreferences("d-settings", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.remove(t.toJson());
+
+        if(t.isDaily && isDeleteP){
+            updateDate(t);
+            editor.putString(t.toJson(),"true");
+        }
+
         editor.commit();
+
         update();
     }
 
@@ -98,11 +119,20 @@ public class MainActivity extends AppCompatActivity {
                     v.findViewById(R.id.delete).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            delete(v);
+                            delete(v,true);
+                        }
+                    });
+                    v.findViewById(R.id.deletep).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            delete(v,false);
                         }
                     });
                     if(t.compareTo(new Task()) >  0){
                         v.setBackgroundColor(Color.RED);
+                    }
+                    if(t.isDaily == false) {
+                        v.findViewById(R.id.deletep).setVisibility(View.GONE);
                     }
                     v.setTag(R.id.taskid,t);
                     map.put(position,v);

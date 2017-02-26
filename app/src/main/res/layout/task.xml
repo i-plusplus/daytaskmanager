@@ -31,10 +31,16 @@
         android:padding="1dp"
         android:id="@+id/priority2"/>
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/deletep"
+        android:src="@android:drawable/ic_menu_delete"/>
+    <ImageView
         android:id="@+id/delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:padding="1dp"
         android:src="@android:drawable/ic_delete"
 

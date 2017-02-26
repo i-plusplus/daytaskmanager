@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,7 +56,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
             }
 
-        }, t.year, t.month,t.day);
+        }, t.year, t.month-1,t.day);
 
         findViewById(R.id.datetimebutton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +81,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
         t.text = ((TextView)findViewById(R.id.item)).getText().toString();
         t.type = (String)((Spinner)findViewById(R.id.abc)).getSelectedItem();
+        t.isDaily = ((CheckBox)findViewById(R.id.isdaily)).isChecked();
         editor.putBoolean(t.toJson(),true);
         editor.commit();
         finish();

@@ -11,6 +11,7 @@ import java.util.TimeZone;
 public class Task implements Comparable<Task>{
 
     int year,month,day,hour,min;
+    boolean isDaily = false;
     String text;
     String type;
 
@@ -21,8 +22,6 @@ public class Task implements Comparable<Task>{
         day = calendar.get(Calendar.DATE);
         hour = calendar.get(Calendar.HOUR) + 5 + 12 * calendar.get(Calendar.AM_PM);
         min = calendar.get(Calendar.MINUTE) + 30;
-
-
     }
 
     public String getDate(){
@@ -33,7 +32,7 @@ public class Task implements Comparable<Task>{
     }
 
     public String toJson(){
-        return convert(year,4) + "---|||---" + convert(month,2) + "---|||---" + convert(day,2) + "---|||---" + convert(hour,2) + "---|||---" + convert(min,2) + "---|||---" + type + "---|||---" + text;
+        return convert(year,4) + "---|||---" + convert(month,2) + "---|||---" + convert(day,2) + "---|||---" + convert(hour,2) + "---|||---" + convert(min,2) + "---|||---" + type + "---|||---" + text + "---|||---" + isDaily;
     }
 
     public static Task fromJson(String s){
@@ -49,6 +48,7 @@ public class Task implements Comparable<Task>{
             t.min = Integer.valueOf(str[4]);
             t.type = str[5];
             t.text = str[6];
+            t.isDaily = Boolean.valueOf(str[7]);
         }catch (Exception e){}
         return t;
     }
