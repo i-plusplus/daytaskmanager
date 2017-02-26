@@ -1,10 +1,13 @@
 package com.example.paras.daytaskmanager;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +26,22 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public void clear(View v){
-        SharedPreferences settings = getSharedPreferences("d-settings", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.clear();
-        editor.commit();
-        update();
+        new AlertDialog.Builder(this)
+                .setTitle("Title")
+                .setMessage("Do you really want to whatever?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        SharedPreferences settings = getSharedPreferences("d-settings", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.clear();
+                        editor.commit();
+                        update();
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
+
+
     }
 
     void updateDate(Task t){
