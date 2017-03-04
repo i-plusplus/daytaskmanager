@@ -1,11 +1,12 @@
 package com.example.paras.daytaskmanager;
 
-import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Ringtone;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,20 +16,55 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
+
+    static private Map<String,Ringtone> ringtones = new HashMap<>();
+    static MainActivity activity;
+
+
+    public static MainActivity getInstance(){
+        return activity;
+    }
+
+    synchronized static public void setRingtone(Ringtone rt, String message){
+        ringtones.put(message,rt);
+    }
+
+    synchronized  public void stopRingtonne(){
+        for(final String s : ringtones.keySet()) {
+            final Ringtone ringtone = ringtones.get(s);
+            if (ringtone != null && ringtone.isPlaying()) {
+                Task t = Task.fromJson(s);
+                new AlertDialog.Builder(MainActivity.getInstance())
+                        .setTitle("Title")
+                        .setMessage("One Strict time " + t.text + " at " + t.getDate())
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+
+                        .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ringtone.stop();
+                                ringtones.remove(s);
+                            }})
+                        .show();
+
+
+            }
+        }
+
+    }
+
 
     public void clear(View v){
         new AlertDialog.Builder(this)
                 .setTitle("Title")
-                .setMessage("Do you really want to whatever?")
+                .setMessage("Do you really want to clear")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
@@ -44,16 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void updateDate(Task t){
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(t.year,t.month-1,t.day,t.hour,t.min);
-        calendar.add(Calendar.DATE,1);
-        t.year = calendar.get(Calendar.YEAR);
-        t.month = calendar.get(Calendar.MONTH) +1;
-        t.day = calendar.get(Calendar.DATE);
-        t.hour = calendar.get(Calendar.HOUR);
-        t.min = calendar.get(Calendar.MINUTE);
-    }
 
 
     public void delete(View v, boolean isDeleteP){
@@ -64,8 +90,11 @@ public class MainActivity extends AppCompatActivity {
         editor.remove(t.toJson());
 
         if(t.isDaily && isDeleteP){
-            updateDate(t);
+            t.updateDate();
             editor.putString(t.toJson(),"true");
+            if(t.needReminder){
+                SendReminder.setReminder(t);
+            }
         }
 
         editor.commit();
@@ -73,14 +102,22 @@ public class MainActivity extends AppCompatActivity {
         update();
     }
 
+    public void remove(){
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        activity = MainActivity.this;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        stopRingtonne();
+    }
 
     @Override
     protected void onResume() {
@@ -93,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }); ;
+        stopRingtonne();
 
     }
 

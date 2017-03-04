@@ -67,7 +67,12 @@
         android:id="@+id/abc">
 
     </Spinner>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_weight="1">
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -75,6 +80,13 @@
         android:id="@+id/isdaily"
         android:text="Is Daily Task"/>
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/reminder"
+        android:text="Strict Time"/>
+</LinearLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

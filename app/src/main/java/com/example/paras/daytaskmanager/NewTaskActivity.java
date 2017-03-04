@@ -19,10 +19,9 @@ import android.widget.TimePicker;
  */
 
 public class NewTaskActivity extends AppCompatActivity {
-    int hour,min,year,month,day;
-
 
     Task t = new Task();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,25 +64,24 @@ public class NewTaskActivity extends AppCompatActivity {
                 datePickerDialog.show();
             }
         });
-
         String[] items = new String[] { "A","B","C"};
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, items);
         ((Spinner)findViewById(R.id.abc)).setAdapter(adapter);
-
-
     }
 
     public void save(View v){
         SharedPreferences settings = getSharedPreferences("d-settings", 0);
         SharedPreferences.Editor editor = settings.edit();
-
         t.text = ((TextView)findViewById(R.id.item)).getText().toString();
         t.type = (String)((Spinner)findViewById(R.id.abc)).getSelectedItem();
         t.isDaily = ((CheckBox)findViewById(R.id.isdaily)).isChecked();
+        t.needReminder = ((CheckBox)findViewById(R.id.reminder)).isChecked();
         editor.putBoolean(t.toJson(),true);
         editor.commit();
+        if(t.needReminder){
+            SendReminder.setReminder(t);
+        }
         finish();
     }
 
